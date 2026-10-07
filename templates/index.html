@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #d1d5db;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 180px;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+        }
+
+        button {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        .update-btn {
+            background: #16a34a;
+        }
+
+        .search-form {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f3f4f6;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .actions form {
+            display: inline;
+        }
+
+        .footer {
+            text-align: center;
+            color: #6b7280;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                width: 95%;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th,
+            td {
+                padding: 8px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Student Management System</h1>
+        <p>Python + Flask + SQLite | Algoryx Python Internship – Task 1</p>
+    </div>
+
+    <div class="card">
+        <h2>Add Student</h2>
+
+        <form action="/add" method="POST">
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Student Name"
+                required
+            >
+
+            <input
+                type="number"
+                name="age"
+                placeholder="Age"
+                min="1"
+                max="120"
+                required
+            >
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                required
+            >
+
+            <input
+                type="text"
+                name="course"
+                placeholder="Course"
+                required
+            >
+
+            <button type="submit">
+                Add Student
+            </button>
+
+        </form>
+    </div>
+
+    <div class="card">
+
+        <h2>Search Students</h2>
+
+        <form action="/search" method="GET" class="search-form">
+
+            <input
+                type="text"
+                name="keyword"
+                placeholder="Search by name, email or course"
+                value="{{ keyword|default('') }}"
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+            <a href="/">
+                <button type="button">
+                    Clear
+                </button>
+            </a>
+
+        </form>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Student Records</h2>
+
+        {% if students %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for student in students %}
+
+                <tr>
+
+                    <td>{{ student[0] }}</td>
+                    <td>{{ student[1] }}</td>
+                    <td>{{ student[2] }}</td>
+                    <td>{{ student[3] }}</td>
+                    <td>{{ student[4] }}</td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <!-- Update -->
+                            <details>
+                                <summary>
+                                    <button type="button" class="update-btn">
+                                        Edit
+                                    </button>
+                                </summary>
+
+                                <form
+                                    action="/update/{{ student[0] }}"
+                                    method="POST"
+                                    style="margin-top: 10px;"
+                                >
+
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value="{{ student[1] }}"
+                                        required
+                                    >
+
+                                    <input
+                                        type="number"
+                                        name="age"
+                                        value="{{ student[2] }}"
+                                        min="1"
+                                        max="120"
+                                        required
+                                    >
+
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value="{{ student[3] }}"
+                                        required
+                                    >
+
+                                    <input
+                                        type="text"
+                                        name="course"
+                                        value="{{ student[4] }}"
+                                        required
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="update-btn"
+                                    >
+                                        Save Changes
+                                    </button>
+
+                                </form>
+
+                            </details>
+
+                            <!-- Delete -->
+                            <form
+                                action="/delete/{{ student[0] }}"
+                                method="POST"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                    onclick="return confirm('Delete this student?')"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <p>No student records found.</p>
+
+        {% endif %}
+
+    </div>
+
+    <div class="footer">
+        <p>Student Management System | Algoryx Python Internship</p>
+    </div>
+
+</div>
+
+</body>
+</html>
